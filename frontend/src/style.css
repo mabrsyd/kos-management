@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: 'Inter', sans-serif;
+  @apply bg-blue-50 text-gray-800 dark:bg-slate-900 dark:text-gray-200;
+}
+
+.btn {
+  @apply px-4 py-2 rounded-lg font-medium shadow transition-colors;
+}
+
+.btn-primary {
+  @apply bg-blue-600 text-white hover:bg-blue-700;
+}
+
+/* Memastikan tabel dan komponen lain memiliki styling dasar */
+table {
+  @apply w-full;
+}
+
+thead th {
+  @apply bg-gray-100 dark:bg-slate-800 p-2;
+}
+
+tbody td {
+  @apply p-2 border-b border-gray-200 dark:border-gray-700;
+}
