@@ -33,3 +33,20 @@ func (r *PenyewaRepository) Update(penyewa *models.Penyewa) error {
 func (r *PenyewaRepository) Delete(id uint) error {
 	return r.DB.Delete(&models.Penyewa{}, id).Error
 }
+
+// FindActive returns all active tenants
+func (r *PenyewaRepository) FindActive() ([]models.Penyewa, error) {
+	var penyewas []models.Penyewa
+	err := r.DB.Where("status = ?", "aktif").Find(&penyewas).Error
+	return penyewas, err
+}
+
+// FindWithDebt returns tenants with outstanding debts by joining with tagihan table
+func (r *PenyewaRepository) FindWithDebt() ([]models.Penyewa, error) {
+	var penyewas []models.Penyewa
+	err := r.DB.Joins("JOIN tagihans ON tagihans.penyewa_id = penyewas.id").
+		Where("tagihans.status != ?", models.StatusLunas).
+		Group("penyewas.id").
+		Find(&penyewas).Error
+	return penyewas, err
+}

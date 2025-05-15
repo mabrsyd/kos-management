@@ -1,16 +1,19 @@
 <template>
-  <div class="p-2 max-w-8xl mx-auto">
-    <div class="flex justify-between items-center mb-8">
-      <h2 class="text-2xl font-bold text-blue-700 dark:text-blue-300">Laporan Keuangan</h2>
+  <div>
+    <div class="flex flex-wrap justify-between items-center gap-4 mb-6">
+      <div>
+        <h2 class="text-xl sm:text-2xl font-bold text-gray-800 dark:text-gray-100">Laporan Keuangan</h2>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Analisis pendapatan dan pengeluaran</p>
+      </div>
       
       <!-- Filter Period -->
-      <div class="flex items-center gap-4">
+      <div class="flex flex-wrap items-center gap-3">
         <div>
-          <label for="periodFilter" class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">Periode</label>
+          <label for="periodFilter" class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Periode</label>
           <select 
             v-model="periodFilter" 
             id="periodFilter"
-            class="border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-slate-700 dark:border-slate-600"
+            class="border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 focus:border-transparent transition-colors duration-200"
             @change="updateChartData"
           >
             <option value="3">3 Bulan Terakhir</option>
@@ -21,41 +24,80 @@
         
         <button 
           @click="fetchData" 
-          class="self-end bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition"
+          class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow-sm transition-colors duration-200"
         >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
           Refresh Data
         </button>
       </div>
     </div>
     
     <!-- Summary Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-      <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow">
-        <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Total Pendapatan</h3>
-        <p class="text-2xl font-bold text-green-600 dark:text-green-400">{{ formatRupiah(totalPemasukan) }}</p>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6">
+      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700 p-4 md:p-5 transition-colors duration-200">
+        <div class="flex items-center">
+          <div class="rounded-full bg-green-100 dark:bg-green-900/30 p-2 mr-3">
+            <svg class="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Total Pendapatan</h3>
+            <p class="text-lg font-bold text-green-600 dark:text-green-400">{{ formatRupiah(totalPemasukan) }}</p>
+          </div>
+        </div>
       </div>
       
-      <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow">
-        <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Total Pengeluaran</h3>
-        <p class="text-2xl font-bold text-red-600 dark:text-red-400">{{ formatRupiah(totalPengeluaran) }}</p>
+      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700 p-4 md:p-5 transition-colors duration-200">
+        <div class="flex items-center">
+          <div class="rounded-full bg-red-100 dark:bg-red-900/30 p-2 mr-3">
+            <svg class="w-5 h-5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Total Pengeluaran</h3>
+            <p class="text-lg font-bold text-red-600 dark:text-red-400">{{ formatRupiah(totalPengeluaran) }}</p>
+          </div>
+        </div>
       </div>
       
-      <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow">
-        <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Saldo</h3>
-        <p class="text-2xl font-bold" :class="saldo >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-red-600 dark:text-red-400'">
-          {{ formatRupiah(saldo) }}
-        </p>
+      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700 p-4 md:p-5 transition-colors duration-200">
+        <div class="flex items-center">
+          <div class="rounded-full bg-blue-100 dark:bg-blue-900/30 p-2 mr-3">
+            <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Saldo</h3>
+            <p class="text-lg font-bold" :class="saldo >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-red-600 dark:text-red-400'">
+              {{ formatRupiah(saldo) }}
+            </p>
+          </div>
+        </div>
       </div>
       
-      <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow">
-        <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Tingkat Hunian</h3>
-        <p class="text-2xl font-bold text-blue-600 dark:text-blue-400">{{ occupancyRate }}%</p>
+      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700 p-4 md:p-5 transition-colors duration-200">
+        <div class="flex items-center">
+          <div class="rounded-full bg-indigo-100 dark:bg-indigo-900/30 p-2 mr-3">
+            <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            </svg>
+          </div>
+          <div>
+            <h3 class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Tingkat Hunian</h3>
+            <p class="text-lg font-bold text-indigo-600 dark:text-indigo-400">{{ occupancyRate }}%</p>
+          </div>
+        </div>
       </div>
     </div>
     
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-      <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow">
-        <h3 class="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-300">Pendapatan & Pengeluaran Bulanan</h3>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-6">
+      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700 p-4 md:p-6 transition-colors duration-200">
+        <h3 class="text-base md:text-lg font-semibold mb-4 text-gray-700 dark:text-gray-300">Pendapatan & Pengeluaran Bulanan</h3>
         <AppChart 
           chart-type="bar"
           :options="incomeChartOptions" 
@@ -64,8 +106,8 @@
         />
       </div>
       
-      <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow">
-        <h3 class="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-300">Status Kamar</h3>
+      <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700 p-4 md:p-6 transition-colors duration-200">
+        <h3 class="text-base md:text-lg font-semibold mb-4 text-gray-700 dark:text-gray-300">Status Kamar</h3>
         <AppChart 
           chart-type="pie"
           :options="roomChartOptions" 
@@ -75,8 +117,8 @@
       </div>
     </div>
     
-    <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow mb-8">
-      <h3 class="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-300">Ringkasan Transaksi per Kategori</h3>
+    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700 p-4 md:p-6 mb-6 transition-colors duration-200">
+      <h3 class="text-base md:text-lg font-semibold mb-4 text-gray-700 dark:text-gray-300">Ringkasan Transaksi per Kategori</h3>
       <AppChart 
         chart-type="bar"
         :options="categoryChartOptions" 
@@ -85,41 +127,45 @@
       />
     </div>
     
-    <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow">
-      <h3 class="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-300">Daftar Tagihan Tertunggak</h3>
+    <div class="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-100 dark:border-slate-700 p-4 md:p-6 transition-colors duration-200">
+      <h3 class="text-base md:text-lg font-semibold mb-4 text-gray-700 dark:text-gray-300">Daftar Tagihan Tertunggak</h3>
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-          <thead>
+          <thead class="bg-gray-50 dark:bg-slate-700">
             <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Penyewa</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Kamar</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Periode</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Jumlah</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+              <th class="px-3 py-2 md:px-4 md:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Penyewa</th>
+              <th class="px-3 py-2 md:px-4 md:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Kamar</th>
+              <th class="px-3 py-2 md:px-4 md:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Periode</th>
+              <th class="px-3 py-2 md:px-4 md:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Jumlah</th>
+              <th class="px-3 py-2 md:px-4 md:py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
             </tr>
           </thead>
           <tbody class="bg-white dark:bg-slate-800 divide-y divide-gray-200 dark:divide-gray-700">
-            <tr v-for="tagihan in unpaidTagihans" :key="tagihan.id" class="hover:bg-gray-50 dark:hover:bg-slate-700">
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">{{ tagihan.penyewa_nama }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">{{ tagihan.kamar_info }}</td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">
+            <tr v-for="tagihan in unpaidTagihans" :key="tagihan.id" class="hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors duration-150">
+              <td class="px-3 py-2 md:px-4 md:py-3 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">{{ tagihan.penyewa_nama }}</td>
+              <td class="px-3 py-2 md:px-4 md:py-3 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">{{ tagihan.kamar_info }}</td>
+              <td class="px-3 py-2 md:px-4 md:py-3 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">
                 {{ formatDate(tagihan.awal_periode) }} - {{ formatDate(tagihan.akhir_periode) }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">{{ formatRupiah(tagihan.jumlah_tagihan) }}</td>
-              <td class="px-6 py-4 whitespace-nowrap">
+              <td class="px-3 py-2 md:px-4 md:py-3 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">{{ formatRupiah(tagihan.jumlah_tagihan) }}</td>
+              <td class="px-3 py-2 md:px-4 md:py-3 whitespace-nowrap">
                 <span 
                   :class="{
-                    'px-2 py-1 rounded-full text-xs font-medium': true,
-                    'bg-red-100 text-red-800': tagihan.status === 'belum lunas',
-                    'bg-yellow-100 text-yellow-800': tagihan.status === 'nyicil'
+                    'px-2 py-1 rounded-full text-xs font-medium inline-flex items-center': true,
+                    'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400': tagihan.status === 'belum lunas',
+                    'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400': tagihan.status === 'nyicil'
                   }"
                 >
+                  <span class="h-1.5 w-1.5 rounded-full mr-1" :class="{
+                    'bg-red-500 dark:bg-red-400': tagihan.status === 'belum lunas',
+                    'bg-yellow-500 dark:bg-yellow-400': tagihan.status === 'nyicil'
+                  }"></span>
                   {{ tagihan.status }}
                 </span>
               </td>
             </tr>
             <tr v-if="unpaidTagihans.length === 0">
-              <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
+              <td colspan="5" class="px-3 py-2 md:px-4 md:py-3 text-center text-sm text-gray-500 dark:text-gray-400">
                 Tidak ada tagihan tertunggak
               </td>
             </tr>

@@ -7,6 +7,7 @@ import (
 	"kos-management/models"
 	"kos-management/repositories"
 	"kos-management/routes"
+	"kos-management/utils"
 	"log"
 	"time"
 
@@ -20,17 +21,8 @@ func main() {
 	config.ConnectDatabase()
 	db := config.DB
 
-	// Drop and recreate tables for fresh start
+	// Auto migrate models - this will create tables if they don't exist
 	fmt.Println("Migrating database schemas...")
-	db.Migrator().DropTable(
-		&models.User{},
-		&models.Kamar{},
-		&models.Penyewa{},
-		&models.Tagihan{},
-		&models.Transaksi{},
-	)
-
-	// Auto migrate models
 	err := db.AutoMigrate(
 		&models.User{},
 		&models.Kamar{},
@@ -72,9 +64,19 @@ func main() {
 	// Initialize controllers
 	userController := &controllers.UserController{Repo: userRepo}
 	kamarController := &controllers.KamarController{Repo: kamarRepo}
-	penyewaController := &controllers.PenyewaController{Repo: penyewaRepo}
+	penyewaController := &controllers.PenyewaController{
+		Repo:        penyewaRepo,
+		TagihanRepo: tagihanRepo,
+		KamarRepo:   kamarRepo,
+	}
 	tagihanController := &controllers.TagihanController{Repo: tagihanRepo}
 	transaksiController := &controllers.TransaksiController{Repo: transaksiRepo}
+
+	// Start the billing scheduler for automatic updates
+	fmt.Println("Starting billing scheduler...")
+	billingScheduler := utils.NewBillingScheduler(tagihanRepo)
+	billingScheduler.StartMonthlyBillingCheck()
+	fmt.Println("Billing scheduler started successfully")
 
 	// Setup Gin router
 	r := gin.Default()

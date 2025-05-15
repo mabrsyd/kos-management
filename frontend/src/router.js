@@ -7,6 +7,7 @@ import Tagihans from './pages/Tagihans.vue'
 import Transaksis from './pages/Transaksis.vue'
 import Report from './pages/Report.vue'
 import Login from './pages/Login.vue'
+import Profile from './pages/Profile.vue'
 
 const routes = [
   { 
@@ -55,6 +56,12 @@ const routes = [
     path: '/report', 
     name: 'report',
     component: Report,
+    meta: { requiresAuth: true }
+  },
+  { 
+    path: '/profile', 
+    name: 'profile',
+    component: Profile,
     meta: { requiresAuth: true }
   },
 ]
